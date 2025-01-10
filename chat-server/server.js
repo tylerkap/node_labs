@@ -27,6 +27,14 @@ function broadcast(message, socketSent) {
         const index = sockets.indexOf(socketSent);
         sockets.splice(index, 1);
     }
+    else {
+        sockets.forEach((socket) => {
+            
+            if(socket != socketSent) {
+                socket.write(message);
+            }
+        });
+    }
 }
 
 
