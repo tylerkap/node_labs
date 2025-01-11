@@ -14,8 +14,8 @@ const waitForUsername = new Promise(resolve => {
 
 waitForUsername.then((username) => {
 
-    const socket = net.connect({
-        port: 3000
+    const socket = net.connect({port: 3000}, () => {
+        console.log(`Welcome ${username} to the chat room.`);
     });
 
     socket.on('connect', () => {
