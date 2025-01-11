@@ -7,11 +7,11 @@ const server = net.createServer(socket => {
     sockets.push(socket);
     console.log('client connected');
     
-    socket.on('data', (data) => {
+    socket.on('data', data => {
         broadcast(data, socket);
     });
 
-    socket.on('error', (err) => {
+    socket.on('error', err => {
         console.log('A clilent has disconnected.')
     });
 
@@ -19,7 +19,11 @@ const server = net.createServer(socket => {
         console.log('A client has left the chat.');
     });
 
-}).listen(5000);
+})
+
+server.listen(3000, () => {
+    console.log('Listening on port 3000');
+})
 
 function broadcast(message, socketSent) {
 
@@ -28,7 +32,7 @@ function broadcast(message, socketSent) {
         sockets.splice(index, 1);
     }
     else {
-        sockets.forEach((socket) => {
+        sockets.forEach(socket => {
             
             if(socket != socketSent) {
                 socket.write(message);
