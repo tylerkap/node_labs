@@ -1,6 +1,14 @@
 const net = require('net');
+const fs = require('fs');
 
 let sockets = [];
+
+fs.writeFile('chat.log', 'This is the Chat Log', (err) => {
+    if (err) {
+        throw err;
+    }
+    console.log('Created File');
+});
 
 const server = net.createServer(socket => {
     
@@ -12,11 +20,11 @@ const server = net.createServer(socket => {
     });
 
     socket.on('error', err => {
-        console.log('A clilent has disconnected.')
+        console.log('A client has disconnected.')
     });
 
     socket.on('close', () => {
-        console.log('A client has left the chat.');
+        console.log(`A client has left the chat.`);
     });
 
 })
@@ -37,6 +45,13 @@ function broadcast(message, socketSent) {
             if(socket != socketSent) {
                 socket.write(message);
             }
+        });
+
+        fs.appendFile('chat.log', `\r\n${message}`, (err) => {
+            if (err) {
+                throw err;
+            }
+            console.log('Wrote to chat log file');
         });
     }
 }
