@@ -22,11 +22,11 @@ waitForUsername.then((username) => {
 
         console.log(`\nWelcome ${username} to the chat room.\n
             Here are list of commands:\n
-            \t- /w *user* *message* sends a private message to specified user
-            \t- /username *edited username* will update your username
-            \t- /kick *user* *password* will kick a user from the chat room if you have the correct admin password
-            \t- /clientlist sends a list of all connected client names
-            \t- /help will show the command help file\n
+            - /w *user* *message* sends a private message to specified user
+            - /username *edited username* will update your username
+            - /kick *user* *password* will kick a user from the chat room if you have the correct admin password
+            - /clientlist sends a list of all connected client names
+            - /help will show the command help file\n
             Begin chatting by typing your message in the line below:
         `);
         
@@ -55,11 +55,11 @@ waitForUsername.then((username) => {
         else if (data.startsWith('/help')) {
             console.log(`
                 Here are list of commands:\n
-                \t- /w *user* *message* sends a private message to specified user
-                \t- /username *edited username* will update your username
-                \t- /kick *user* *password* will kick a user from the chat room if you have the correct admin password
-                \t- /clientlist sends a list of all connected client names
-                \t- /help will show the command help file\n
+                - /w *user* *message* sends a private message to specified user
+                - /username *edited username* will update your username
+                - /kick *user* *password* will kick a user from the chat room if you have the correct admin password
+                - /clientlist sends a list of all connected client names
+                - /help will show the command help file\n
                 Begin chatting by typing your message in the line below:
             `);
         }

@@ -17,17 +17,7 @@ fs.writeFile('chat.log', 'This is the Chat Log', (err) => {
 const server = net.createServer(socket => {
     
     sockets.push(socket);
-
-    
     console.log('client connected');
-    //console.log(socket);
-
-    // socket.on('setUsername', (username) => {
-    //     console.log(username);
-    // });
-
-    // socket.emit('setUsername');
-
 
     socket.on('data', (data) => {
         processData(data, socket);
@@ -73,7 +63,15 @@ function sendMessage(username, message, fromUserSocket) {
     if (userIndex > -1 ) {
         users[userIndex].socket.write(fromUser + message);
     }
+}
 
+function writeToChatLog(message) {
+    fs.appendFile('chat.log', `\r\n${message}`, (err) => {
+        if (err) {
+            throw err;
+        }
+        console.log('Wrote to chat log file');
+    });
 }
 
 
@@ -89,10 +87,10 @@ function processData(message, socketSent) {
         if(messageStr.startsWith('/clientlist')) {
             console.log(messageStr);
 
-            let chatClientStr = "";
+            let chatClientStr = "Clients in the Chat Room:";
 
             users.forEach((user) => {
-                chatClientStr += user.username + '\n';
+                chatClientStr += '\n' + user.username;
             })
 
             socketSent.write(chatClientStr);
@@ -131,8 +129,20 @@ function processData(message, socketSent) {
                    users.splice(index, 1); 
                    let kickedMessage = `${kickedUser} has been kicked by an admin`;
                    broadcast(kickedMessage, socketSent);
+                   writeToChatLog(kickedMessage);
                 }
             }
+        } 
+        else {
+            socketSent.write(`That was an incorrect command!\n
+                Here are list of commands:\n
+                - /w *user* *message* sends a private message to specified user
+                - /username *edited username* will update your username
+                - /kick *user* *password* will kick a user from the chat room if you have the correct admin password
+                - /clientlist sends a list of all connected client names
+                - /help will show the command help file\n
+                Begin chatting by typing your message in the line below:
+            `);
         }
     }
     else {
@@ -159,6 +169,7 @@ function processData(message, socketSent) {
                     let userQuit = `${users[userIndex].username} has left the chat.`;
                     broadcast(userQuit, socketSent);
                     users.splice(userIndex, 1);
+                    writeToChatLog(userQuit);
                 }
 
                 const index = sockets.indexOf(socketSent);
@@ -174,12 +185,7 @@ function processData(message, socketSent) {
                 
                 broadcast(messageStr, socketSent);
         
-                fs.appendFile('chat.log', `\r\n${message}`, (err) => {
-                    if (err) {
-                        throw err;
-                    }
-                    console.log('Wrote to chat log file');
-                });
+                writeToChatLog(messageStr);
             }
         }
         else {
@@ -194,6 +200,8 @@ function processData(message, socketSent) {
             let newUser = `${messageStr} has joined the chat.`;
 
             broadcast(newUser, socketSent);
+
+            writeToChatLog(newUser);
         }
     }
 }
