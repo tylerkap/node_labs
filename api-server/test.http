@@ -1,0 +1,33 @@
+//For some reason, I believe the Rest client is affecting this POST request. It's not working here,
+//but it works on other REST CLIENTS.
+
+POST http://localhost:3000/getToken
+
+content-Type: application/json
+{
+    "userId": "MClairmont",
+    "password": "Eternal"
+}
+
+###
+
+GET http://localhost:3000/cards?cost=5
+
+
+###
+
+POST http://localhost:3000/cards/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJNQ2xhaXJtb250IiwiaWF0IjoxNzM3NzU5MjY2LCJleHAiOjE3Mzc3NTk4NjZ9.JZHdqMvjW-a-mE5hknvSuMnsxfIdugXM94RCuXwByXU
+
+Content-Type: application/json
+{
+    "id": 200,
+    "name": "Demon Thrall",
+    "set": "Expansion Pack",
+    "cardNumber": 26,
+    "type": "Creature",
+    "power": 1000,
+    "toughness": 500,
+    "rarity": "Common",
+    "cost": 3
+}
