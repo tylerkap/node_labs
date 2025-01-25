@@ -4,12 +4,10 @@ const { expressjwt } = require("express-jwt");
 const cardsJSON = require('./cards.json');
 const fs = require('fs');
 const path = require('path');
-const absolutePath = path.resolve(__dirname, './cards.json');
 const url = require('url');
 const PORT = process.env.PORT || 3000;
 const app = express();
-const secret = "mySecret";
-
+require('dotenv').config();
 app.use(express.json());
 
 
@@ -42,14 +40,13 @@ app.get('/', (req, res) => {
 
 app.post('/getToken', (req, res) => {
     const {userId, password} = req.body;
-    console.log(req.body);
     const user = users.find((currUser) => currUser.userId === userId);
 
     if (!user || user.password !== password) {
         return res.status(401).json({errorMessage: "Invalid Credentials"});
     }
 
-    const token = jwt.sign({userId: user.userId}, secret, {
+    const token = jwt.sign({userId: user.userId}, process.env.secret, {
         algorithm: "HS256",
         expiresIn: "10m",
     });
@@ -108,7 +105,7 @@ app.get('/cards', (req, res) => {
 });
 
 app.post('/cards/create', 
-    expressjwt({ secret: secret, algorithms: ["HS256"] }),
+    expressjwt({ secret: process.env.secret, algorithms: ["HS256"] }),
     (req, res) => {
         const newCard = req.body;
         const index = cardsJSON.cards.findIndex((card) => card.id === newCard.id);
@@ -137,79 +134,79 @@ app.post('/cards/create',
 );
 
 app.put('/cards/:id', 
-    expressjwt({ secret: secret, algorithms: ["HS256"] }),
+    expressjwt({ secret: process.env.secret, algorithms: ["HS256"] }),
     (req, res) => {
         const {id, name, set, cardNumber, type, power, toughness, rarity, cost} = req.body; 
         let parsedParamId = parseInt(req.params.id);
         let index = cardsJSON.cards.findIndex((card) => card.id === parsedParamId);
 
+        if (index < 0) {
+            res.json({errorMessage: "The Id provided cannot be found. Please Enter a number."});
+        }
+        else {
 
-        console.log(power);
-        console.log(req.params.id);
-        console.log(isNaN(req.params.id));
-        console.log(index);
-
-        if (id && !isNaN(id)) {
-
-            let indexNewId = cardsJSON.cards.findIndex((card) => card.id === id);
-
-            if (indexNewId >= 0) {
-                return res.status(400).json({ errorMessage: "There is already an exsiting card with that id. Select a different id."});
+            if (id && !isNaN(id)) {
+    
+                let indexNewId = cardsJSON.cards.findIndex((card) => card.id === id);
+    
+                if (indexNewId >= 0) {
+                    return res.status(400).json({ errorMessage: "There is already an exsiting card with that id. Select a different id."});
+                }
+                else {
+                    cardsJSON.cards[index].id = id;
+                }
             }
-            else {
-                cardsJSON.cards[index].id = id;
+    
+            if (name) {
+                cardsJSON.cards[index].name = name;
             }
-        }
-
-        if (name) {
-            cardsJSON.cards[index].name = name;
-        }
-
-        if (set) {
-            cardsJSON.cards[index].set = set;
-        }
-
-        if (cardNumber && !isNaN(cardNumber)) {
-            cardsJSON.cards[index].cardNumber = cardNumber;
-        }
-
-        if (type) {
-            cardsJSON.cards[index].type = type;
-        }
-
-        if (power && !isNaN(power)) {
-            cardsJSON.cards[index].power = power;
-        }
-
-        if (toughness && !isNaN(toughness)) {
-            cardsJSON.cards[index].toughness = toughness;
-        }
-
-        if (rarity) {
-            cardsJSON.cards[index].rarity = rarity;
-        }
-
-        if (cost && !isNaN(cost)) {
-            cardsJSON.cards[index].cost = cost;
-        }
-        
-
-        fs.writeFile("cards.json", JSON.stringify(cardsJSON, null, 2), (err) => {
-            if (err) {
-                console.log(err);
-                return;
+    
+            if (set) {
+                cardsJSON.cards[index].set = set;
             }
-            else {
-                console.log("Added New Card to cards.json File")
+    
+            if (cardNumber && !isNaN(cardNumber)) {
+                cardsJSON.cards[index].cardNumber = cardNumber;
             }
-        });
-
-        res.json({message: "Successfully Updated Card", updatedCard: cardsJSON.cards[index]});
+    
+            if (type) {
+                cardsJSON.cards[index].type = type;
+            }
+    
+            if (power && !isNaN(power)) {
+                cardsJSON.cards[index].power = power;
+            }
+    
+            if (toughness && !isNaN(toughness)) {
+                cardsJSON.cards[index].toughness = toughness;
+            }
+    
+            if (rarity) {
+                cardsJSON.cards[index].rarity = rarity;
+            }
+    
+            if (cost && !isNaN(cost)) {
+                cardsJSON.cards[index].cost = cost;
+            }
+            
+    
+            fs.writeFile("cards.json", JSON.stringify(cardsJSON, null, 2), (err) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                else {
+                    console.log("Added Updated Card to cards.json File")
+                }
+            });
+    
+            res.json({message: "Successfully Updated Card", updatedCard: cardsJSON.cards[index]});
+        }
     }
 );
 
 app.delete('/cards/:id',
-    expressjwt({secret: secret, algorithms: ["HS256"]}),
+    expressjwt({secret: process.env.secret, algorithms: ["HS256"]}),
     (req, res) => {
         let id = parseInt(req.params.id);
         let index = cardsJSON.cards.findIndex((card) => card.id === id);
