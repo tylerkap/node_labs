@@ -8,6 +8,7 @@ const absolutePath = path.resolve(__dirname, './cards.json');
 const url = require('url');
 const PORT = process.env.PORT || 3000;
 const app = express();
+const secret = "mySecret";
 
 app.use(express.json());
 
@@ -34,14 +35,10 @@ const users = [
 ]
 
 app.get('/', (req, res) => {
-    console.log('Hello');
-    //res.status(200).json({message: "Hello"});
-    //res.download('app.js');
-    res.send('HI');
-    // res.render('cards.json')
+    console.log('Welcome');
+    res.send('Welcome to the CARD API');
 });
 
-const secret = "mySecret";
 
 app.post('/getToken', (req, res) => {
     const {userId, password} = req.body;
@@ -209,9 +206,33 @@ app.put('/cards/:id',
 
         res.json({message: "Successfully Updated Card", updatedCard: cardsJSON.cards[index]});
     }
-)
+);
 
+app.delete('/cards/:id',
+    expressjwt({secret: secret, algorithms: ["HS256"]}),
+    (req, res) => {
+        let id = parseInt(req.params.id);
+        let index = cardsJSON.cards.findIndex((card) => card.id === id);
 
+        if (index >= 0) {
+            res.json({message: "Successfully Deleted Card", deletedCard: cardsJSON.cards[index]});
+            cardsJSON.cards.splice(index, 1);
+
+            fs.writeFile("cards.json", JSON.stringify(cardsJSON, null, 2), (err) => {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                else {
+                    console.log("Deleted Card from cards.json File")
+                }
+            });
+        }
+        else {
+            res.json({errorMessage: "Could Not Find Requested Card ID."})
+        }
+    }
+);
 
 app.use((err, req, res, next) => {
     if (err.name === 'UnauthorizedError') {
