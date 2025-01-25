@@ -34,7 +34,7 @@ const users = [
 
 app.get('/', (req, res) => {
     console.log('Welcome');
-    res.send('Welcome to the CARD API');
+    res.send('Welcome my friend');
 });
 
 
