@@ -1271,15 +1271,15 @@
       "cost": 2
     },
     {
-      "id": 200,
-      "name": "Demon Thrall",
-      "set": "Expansion Pack",
-      "cardNumber": 26,
-      "type": "Creature",
-      "power": 1000,
-      "toughness": 500,
-      "rarity": "Common",
-      "cost": 3
+      "id": 2000,
+      "name": "NEW CARD NAME",
+      "set": "Secret Lairs",
+      "cardNumber": 5,
+      "type": "Spell",
+      "power": 59999999,
+      "toughness": 59999999,
+      "rarity": "Ultra Rare",
+      "cost": 1000000000
     },
     {
       "id": 201,

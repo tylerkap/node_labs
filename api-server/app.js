@@ -131,11 +131,83 @@ app.post('/cards/create',
                 return;
             }
             else {
-                console.log("File Written Successfully")
+                console.log("Added New Card to cards.json File")
             }
         });
 
         console.dir(cardsJSON.cards, {'maxArrayLength': null});
+    }
+);
+
+app.put('/cards/:id', 
+    expressjwt({ secret: secret, algorithms: ["HS256"] }),
+    (req, res) => {
+        const {id, name, set, cardNumber, type, power, toughness, rarity, cost} = req.body; 
+        let parsedParamId = parseInt(req.params.id);
+        let index = cardsJSON.cards.findIndex((card) => card.id === parsedParamId);
+
+
+        console.log(power);
+        console.log(req.params.id);
+        console.log(isNaN(req.params.id));
+        console.log(index);
+
+        if (id && !isNaN(id)) {
+
+            let indexNewId = cardsJSON.cards.findIndex((card) => card.id === id);
+
+            if (indexNewId >= 0) {
+                return res.status(400).json({ errorMessage: "There is already an exsiting card with that id. Select a different id."});
+            }
+            else {
+                cardsJSON.cards[index].id = id;
+            }
+        }
+
+        if (name) {
+            cardsJSON.cards[index].name = name;
+        }
+
+        if (set) {
+            cardsJSON.cards[index].set = set;
+        }
+
+        if (cardNumber && !isNaN(cardNumber)) {
+            cardsJSON.cards[index].cardNumber = cardNumber;
+        }
+
+        if (type) {
+            cardsJSON.cards[index].type = type;
+        }
+
+        if (power && !isNaN(power)) {
+            cardsJSON.cards[index].power = power;
+        }
+
+        if (toughness && !isNaN(toughness)) {
+            cardsJSON.cards[index].toughness = toughness;
+        }
+
+        if (rarity) {
+            cardsJSON.cards[index].rarity = rarity;
+        }
+
+        if (cost && !isNaN(cost)) {
+            cardsJSON.cards[index].cost = cost;
+        }
+        
+
+        fs.writeFile("cards.json", JSON.stringify(cardsJSON, null, 2), (err) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            else {
+                console.log("Added New Card to cards.json File")
+            }
+        });
+
+        res.json({message: "Successfully Updated Card", updatedCard: cardsJSON.cards[index]});
     }
 )
 
@@ -143,7 +215,7 @@ app.post('/cards/create',
 
 app.use((err, req, res, next) => {
     if (err.name === 'UnauthorizedError') {
-        res.status(401).json({errorMessage: "Invalid token...."});
+        res.status(401).json({errorMessage: "Invalid or Expired token...."});
     }
 });
 
